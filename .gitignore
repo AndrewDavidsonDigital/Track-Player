@@ -37,4 +37,4 @@ coverage
 .pnp*
 .editorconfig
 
-public/tracks/*
+public/tracks-full/*
