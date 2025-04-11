@@ -1,49 +1,94 @@
 { 
   "tracks" : [
     {
-      "title": "track-1",
-      "band": "",
-      "path": ""
+      "title": "Numb",
+      "band": "Linkin Park",
+      "path": "/tracks/linkin_park_numb.mp3",
+      "album": {
+        "title": "Meteora",
+        "trackNumber": 13,
+        "albumArt": "/album-art/linkin_park_meteora.jpg"
+      }
     },
     {
-      "title": "track-2",
-      "band": "",
-      "path": ""
+      "title": "In The End",
+      "band": "Linkin Park",
+      "path": "/tracks/linkin_park_in_the_end.mp3",
+      "album": {
+        "title": "Hybrid Theory",
+        "trackNumber": 8,
+        "albumArt": "/album-art/linkin_park_hybrid_theory.png"
+      }
     },
     {
-      "title": "track-3",
-      "band": "",
-      "path": ""
+      "title": "Crawling",
+      "band": "Linkin Park",
+      "path": "/tracks/linkin_park_crawling.mp3",
+      "album": {
+        "title": "Hybrid Theory",
+        "trackNumber": 5,
+        "albumArt": "/album-art/linkin_park_hybrid_theory.png"
+      }
     },
     {
-      "title": "track-4",
-      "band": "",
-      "path": ""
+      "title": "Breaking The Habit",
+      "band": "Linkin Park",
+      "path": "/tracks/linkin_park_breaking_the_habit.mp3",
+      "album": {
+        "title": "Meteora",
+        "trackNumber": 9,
+        "albumArt": "/album-art/linkin_park_meteora.jpg"
+      }
     },
     {
-      "title": "track-5",
-      "band": "",
-      "path": ""
+      "title": "What I've Done",
+      "band": "Linkin Park",
+      "path": "/tracks/linkin_park_what_ive_done.mp3",
+      "album": {
+        "title": "Minutes to Midnight",
+        "trackNumber": 6,
+        "albumArt": "/album-art/linkin_park_minutes_to_midnight.jpg"
+      }
     },
     {
-      "title": "track-6",
-      "band": "",
-      "path": ""
+      "title": "Down With The Sickness",
+      "band": "Disturbed",
+      "path": "/tracks/disturbed_down_with_the_sickness.mp3",
+      "album": {
+        "title": "The Sickness",
+        "trackNumber": 4,
+        "albumArt": "/album-art/disturbed_the_sickness.jpg"
+      }
     },
     {
-      "title": "track-7",
-      "band": "",
-      "path": ""
+      "title": "The Sound of Silence",
+      "band": "Disturbed",
+      "path": "/tracks/disturbed_sound_of_silence.m4a",
+      "album": {
+        "title": "Immortalized",
+        "trackNumber": 11,
+        "albumArt": "/album-art/disturbed_immortalized.jpg"
+      }
     },
     {
-      "title": "track-8",
-      "band": "",
-      "path": ""
+      "title": "Stricken",
+      "band": "Disturbed",
+      "path": "/tracks/disturbed_stricken.mp3",
+      "album": {
+        "title": "Ten Thousand Fists",
+        "trackNumber": 5,
+        "albumArt": "/album-art/disturbed_ten_thousand_fists.jpg"
+      }
     },
     {
-      "title": "track-9",
-      "band": "",
-      "path": ""
+      "title": "Inside The Fire",
+      "band": "Disturbed",
+      "path": "/tracks/disturbed_inside_the_fire.mp3",
+      "album": {
+        "title": "Indestructible",
+        "trackNumber": 1,
+        "albumArt": "/album-art/disturbed_indestructible.jpg"
+      }
     }
   ]
 }
