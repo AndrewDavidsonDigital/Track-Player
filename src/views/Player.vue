@@ -1,14 +1,17 @@
 <script setup lang="ts">
   import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
   import trackList from '@/assets/trackList.json';
-  import { RefreshIcon } from '@/components/icons';
+  import { RefreshIcon, LoopIcon, RandomTrackIcon } from '@/components/icons';
 
   const AUDIO_ENGINE_ID = '_audio_engine';
+
+  type ProgressType = "Next" | "Loop" | "Random"
 
   const deg = ref(5);
   const audioEngine = ref<HTMLAudioElement>();
   const progressionPercent = ref(0);
   const currentlyPlayingMusic = ref(false);
+  const progressType = ref<ProgressType>("Next");
 
   interface IAlbum {
     title: string;
@@ -43,6 +46,30 @@
   watch(displayables, (newVal) => {
     activeTrack.value = newVal.length / 2;
   });
+  
+  watch(progressionPercent, (newVal) => {
+    if (newVal >= 99){
+      console.log('end of file');
+      progressTrack();
+    }
+  });
+
+  
+  function progressTrack(){
+    switch (progressType.value) {
+      case 'Next':
+        startNext();
+        break;
+      case 'Loop':
+        break;
+      case 'Random':
+        startRandom();
+        break;
+    
+      default:
+        break;
+    }
+  }
 
 
   function changeTrack(event: WheelEvent){
@@ -95,6 +122,37 @@
     }
     
   }
+
+  function startNext(){
+    console.log('startNext')
+    if (!(audioEngine.value)) {
+      return
+    }
+
+    audioEngine.value.pause();
+
+    const newTrackIndex = ( (playingTrack.value + 1) % displayables.value.length);
+    // console.log('new index is: ', newTrackIndex)
+
+    setPlayingTrack(newTrackIndex);
+
+  }
+
+  function startRandom(){
+    console.log('startRandom')
+    if (!(audioEngine.value)) {
+      return
+    }
+
+    audioEngine.value.pause();
+
+    const newTrackIndex = (Math.round(Math.random() * displayables.value.length) % (displayables.value.length -1));
+    // console.log('new index is: ', newTrackIndex)
+
+    setPlayingTrack(newTrackIndex);
+
+  }
+
   function stop(){
     console.log('stop')
     if (!(audioEngine.value)) {
@@ -104,6 +162,14 @@
     audioEngine.value.pause();
     audioEngine.value.currentTime = 0;
 
+  }
+
+  function toggleProgType(progType: ProgressType){
+    if (progressType.value === progType){
+      progressType.value = 'Next';
+    }else{
+      progressType.value = progType;
+    }
   }
 
   onMounted(()=> {
@@ -149,6 +215,28 @@
         >
           Stop
         </button>
+        <button 
+          class="border rounded-md py-1 px-2 bg-slate-800"
+          @click="e => startRandom()"
+        >
+          Random Track
+        </button>
+        <button 
+          class="border rounded-md py-1 px-2 bg-slate-800"
+          :class="{ 'border-amber-500 text-amber-500' : progressType === 'Random'}"
+          aria-label="Set progress mode to 'Random'"
+          @click="() => toggleProgType('Random')"
+        >
+          <RandomTrackIcon />
+        </button>
+        <button 
+          class="border rounded-md py-1 px-2 bg-slate-800"
+          :class="{ 'border-amber-500 text-amber-500' : progressType === 'Loop'}"
+          aria-label="Set progress mode to 'loop'"
+          @click="() => toggleProgType('Loop')"
+        >
+          <LoopIcon />
+        </button>
       </div>
       <div class="px-[10vw] w-[100vw] md:w-full md:px-10">
         <input
@@ -165,6 +253,7 @@
       </div>
       <button 
         class="md:hidden bg-slate-900 size-10 rounded-full border-2 border-slate-600 z-10 md:ml-20 cursor-pointer self-center group flex justify-center"
+        aria-label="Reset Orientation"
         @click="() => activeTrack = playingTrack"
       >
         <RefreshIcon class="size-full p-1.5 z-10 text-emerald-600 opacity-10 group-hover:opacity-100" />
@@ -205,13 +294,15 @@
             @click="() => setPlayingTrack(index)"
             @keypress="() => setPlayingTrack(index)"
           >
-            <h3 class="text-right">
+            <h3 class="text-right cursor-pointer">
               <span class="hidden lg:inline">{{ trackDetail.band }}:</span> {{ trackDetail.title }}
             </h3>
           </button>
         </template>
         <button 
           class="hidden md:flex bg-slate-900 size-10 rounded-full border-2 border-slate-600 z-10 md:ml-20 cursor-pointer group  justify-center"
+          title="Reset Orientation"
+          aria-label="Reset Orientation"
           @click="() => activeTrack = playingTrack"
         >
           <RefreshIcon class="size-full p-1.5 z-10 text-emerald-600 opacity-10 group-hover:opacity-100" />
