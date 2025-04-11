@@ -33,7 +33,7 @@
     while (retval.length < (360 / deg.value)) {
       retval = retval.concat([...(options.value)]);
     }
-    return retval;
+    return retval.slice(0, (360 / deg.value));
   });
 
   const currentTrack = computed(() => {
@@ -74,10 +74,10 @@
 
   function changeTrack(event: WheelEvent){
     if (event.deltaY > 0){
-      console.log('scrolling: down');
+      // console.log('scrolling: down');
       setDisplayedTrack(activeTrack.value - 1);
     }else {
-      console.log('scrolling: up');
+      // console.log('scrolling: up');
       setDisplayedTrack(activeTrack.value + 1);
     }
   }

@@ -27,7 +27,3 @@
     y2="9"
   ></line></svg>
 </template>
-
-<script setup lang="ts">
-// Component logic here
-</script> 
