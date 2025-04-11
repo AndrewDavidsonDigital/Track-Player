@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './expose.css'; /* expose all tailwind css default colours */
 
 /* RESET */
 
@@ -16,7 +17,21 @@ p,li,figcaption {
 /* Container query bounds */
 header, footer, main, section, article {
   container-type: inline-size;
+  @apply duration-100
 }
+
+
+
+@theme {
+  /* These values are added in addition to the defaults */
+  --breakpoint-xs: 480px;
+}
+
+*{
+  --animate-duration: 1s;
+  animation-duration: var(--animate-duration) !important;
+}
+
 
 /**********/
 
@@ -26,4 +41,18 @@ header, footer, main, section, article {
   >* {
     grid-area: stack;
   }      
+}
+
+.animation-duration-3000 {
+  --animate-duration: 3s;
+}
+.animation-duration-300 {
+  --animate-duration: 30ms;
+}
+
+.animation-pause {
+  animation-play-state: paused;
+}
+.animation-play {
+  animation-play-state: running;
 }
