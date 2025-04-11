@@ -12,6 +12,9 @@
   const progressionPercent = ref(0);
   const currentlyPlayingMusic = ref(false);
   const progressType = ref<ProgressType>("Next");
+  const volumeValue = ref(0.3);
+
+  const isLocal = import.meta.env.DEV
 
   interface IAlbum {
     title: string;
@@ -27,6 +30,14 @@
   }
 
   const options = ref<ITackInfo[]>(trackList.tracks);
+
+  /* 
+   * remove this if you are testing this locally (yarn boot / yarn dev) without 
+   * the full tracks (these are not included for obvious copyright reasons) 
+   */
+  if (isLocal){
+    options.value.map(el => el.path = el.path.replace('/tracks/', '/tracks-full/'))
+  }
 
   const displayables = computed(() => {
     let retval: ITackInfo[] = [...(options.value)];
@@ -195,14 +206,14 @@
       :id="AUDIO_ENGINE_ID"
       class="pointer-events-none"
       :src="displayables[playingTrack].path"
-      :volume="0.05"
+      :volume="volumeValue"
       playsinline
       autoplay
       loop
       @play="() => playbackStarted()"
     ></audio>
     <section class="w-full mt-5 z-100 [&>div>button]:cursor-pointer flex flex-col gap-4 h-fit">
-      <div class="flex gap-4 justify-center">
+      <div class="flex flex-wrap gap-4 justify-center">
         <button 
           class="border rounded-md py-1 px-2 bg-slate-800"
           @click="e => playPause()"
@@ -237,6 +248,17 @@
         >
           <LoopIcon />
         </button>
+        <input
+          class="w-20"
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          aria-label="Volume range"
+          role="presentation"
+          value="0.3"
+          @input="(e) => volumeValue = Number((e.target as HTMLInputElement).value)"
+        />
       </div>
       <div class="px-[10vw] w-[100vw] md:w-full md:px-10">
         <input
@@ -259,7 +281,7 @@
         <RefreshIcon class="size-full p-1.5 z-10 text-emerald-600 opacity-10 group-hover:opacity-100" />
       </button>
     </section>
-    <div class="bg-red-500 h-[20vh] xs:hidden"></div>
+    <div class="bg-slate-600 h-[20vh] xs:hidden"></div>
     <div>
       <img
         class="h-[90vh] w-screen opacity-40"
@@ -335,6 +357,7 @@
 </template>
 
 <style lang="css" scoped>
+
   .h-dynamic{
     height: calc-size(fit-content, size + 2rem);
   }

@@ -6,10 +6,9 @@
   "scripts": {
     "boot": "yarn install && yarn dev",
     "dev": "vite --host",
-    "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "build-only": "vite build",
+    "build": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint ."
   },
