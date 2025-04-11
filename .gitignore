@@ -36,3 +36,5 @@ coverage
 .vscode/
 .pnp*
 .editorconfig
+
+public/tracks/*
