@@ -183,6 +183,12 @@
     }
   }
 
+  function keyboardNavigate(e: KeyboardEvent, targetIndex:number){
+    setPlayingTrack(targetIndex); 
+    const focusTarget: HTMLElement| null = ((e.srcElement as HTMLButtonElement).parentElement?.parentElement)?.querySelector(`#track_${targetIndex}`) || null;
+    focusTarget?.focus();
+  }
+
   onMounted(()=> {
     const el = document.getElementById(AUDIO_ENGINE_ID) as HTMLAudioElement;
     if (el){
@@ -256,7 +262,7 @@
           step="0.05"
           aria-label="Volume range"
           role="presentation"
-          value="0.3"
+          value="0.1"
           @input="(e) => volumeValue = Number((e.target as HTMLInputElement).value)"
         />
       </div>
@@ -309,12 +315,27 @@
           <button 
             :id="`track_${index}`"
             :style="`rotate:${deg * (activeTrack - index)}deg`"
-            class="pr-5 text-xl text-slate-800 hover:text-green-600 h-dynamic origin-[left_center] content-center transition-all duration-150"
+            class="pr-5 text-xl text-slate-800  h-dynamic origin-[left_center] content-center transition-all duration-300"
+            :data-index="index"
+            :data-active="activeTrack"
+            :tabindex="((
+              activeTrack > 0 ? 
+                (activeTrack % displayables.length) : 
+                (Math.abs(displayables.length - Math.abs(activeTrack))) % displayables.length)
+              === index) ? 0 : -1"
             :class="[
-              { '!text-amber-400' : playingTrack === index },
+              { '!text-amber-400 underline underline-offset-3' : playingTrack === index },
+              { '-translate-x-5 border-r border-amber-500 rounded-2xl !text-green-600' : (
+                activeTrack > 0 ? 
+                  (activeTrack % displayables.length) : 
+                  (Math.abs(displayables.length - Math.abs(activeTrack))) % displayables.length)
+                === index
+              },
             ]"
             @click="() => setPlayingTrack(index)"
-            @keypress="() => setPlayingTrack(index)"
+            @keypress.space.enter="() => setPlayingTrack(index)"
+            @keydown.arrow-up="((e:KeyboardEvent) => keyboardNavigate(e, index - 1))"
+            @keydown.arrow-down="((e:KeyboardEvent) => keyboardNavigate(e, index + 1))"
           >
             <h3 class="text-right cursor-pointer">
               <span class="hidden lg:inline">{{ trackDetail.band }}:</span> {{ trackDetail.title }}
