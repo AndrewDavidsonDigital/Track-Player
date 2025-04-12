@@ -20,11 +20,14 @@ header, footer, main, section, article {
   @apply duration-100
 }
 
-
+body {
+  @apply bg-slate-800;
+}
 
 @theme {
   /* These values are added in addition to the defaults */
   --breakpoint-xs: 480px;
+  --container-content: 1280px;
 }
 
 *{
@@ -55,4 +58,9 @@ header, footer, main, section, article {
 }
 .animation-play {
   animation-play-state: running;
+}
+
+
+.max-w-content {
+
 }

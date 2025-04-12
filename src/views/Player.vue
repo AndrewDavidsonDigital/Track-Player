@@ -335,7 +335,7 @@
           mx-auto md:mx-[unset] 
           grid-area-stack rounded-full items-center
           animate-spin animation-duration-3000 
-          md:translate-x-[20vw] scale-[110%] overflow-clip border-2 
+          md:translate-x-[clamp(10px,15vw,40%)] scale-[110%] overflow-clip border-2 
           border-slate-600 animation-duration-1000
           max-h-2/3 aspect-square
         "
