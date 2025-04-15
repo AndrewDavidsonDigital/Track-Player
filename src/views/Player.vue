@@ -318,6 +318,8 @@
             class="pr-5 text-xl text-slate-800  h-dynamic origin-[left_center] content-center transition-all duration-300"
             :data-index="index"
             :data-active="activeTrack"
+            :data-deg="deg * (activeTrack - index)"
+            :data-degClean="Math.abs((deg * (activeTrack - index)) % 360)"
             :tabindex="((
               activeTrack > 0 ? 
                 (activeTrack % displayables.length) : 
@@ -331,6 +333,7 @@
                   (Math.abs(displayables.length - Math.abs(activeTrack))) % displayables.length)
                 === index
               },
+              { 'opacity-0 pointer-events-none' : (Math.abs((deg * (activeTrack - index)) % 360) > 45) && (Math.abs((deg * (activeTrack - index)) % 360) < 315)}
             ]"
             @click="() => setPlayingTrack(index)"
             @keypress.space.enter="() => setPlayingTrack(index)"
