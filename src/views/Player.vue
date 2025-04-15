@@ -1,12 +1,13 @@
 <script setup lang="ts">
   import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
   import trackList from '@/assets/trackList.json';
-  import { RefreshIcon, LoopIcon, RandomTrackIcon } from '@/components/icons';
+  import { RefreshIcon } from '@/components/icons';
+  import Controls from '@/components/Controls.vue';
 
   const AUDIO_ENGINE_ID = '_audio_engine';
   const TOUCH_TICK_LENGTH = 100; // 100ms debouncer
 
-  type ProgressType = "Next" | "Loop" | "Random"
+  export type ProgressType = "Next" | "Loop" | "Random"
 
   const deg = ref(5);
   const audioEngine = ref<HTMLAudioElement>();
@@ -142,6 +143,10 @@
     // progressionPercent.value = 0;
   }
 
+  function setVolume(val: number){
+    volumeValue.value = val
+  }
+
   const TIMER_INTERVAL = 200;
   let intervalId = -1;
 
@@ -253,78 +258,6 @@
       loop
       @play="() => playbackStarted()"
     ></audio>
-    <section 
-      class="
-        w-full h-fit 
-        mt-[clamp(-8dvw,-5dvh,-2dvw)] md:mt-5 z-100 
-        [&>div>button]:cursor-pointer 
-        flex flex-col gap-4 
-        self-center md:self-start 
-        p-5
-        bg-slate-800/50 rounded-md md:bg-transparent
-      "
-    >
-      <div class="flex flex-wrap gap-4 justify-center">
-        <button 
-          class="border rounded-md py-1 px-2 bg-slate-800"
-          @click="e => playPause()"
-        >
-          Play / Pause
-        </button>
-        <button 
-          class="border rounded-md py-1 px-2 bg-slate-800"
-          @click="e => stop()"
-        >
-          Stop
-        </button>
-        <button 
-          class="border rounded-md py-1 px-2 bg-slate-800"
-          @click="e => startRandom()"
-        >
-          Random Track
-        </button>
-        <button 
-          class="border rounded-md py-1 px-2 bg-slate-800"
-          :class="{ 'border-amber-500 text-amber-500' : progressType === 'Random'}"
-          aria-label="Set progress mode to 'Random'"
-          @click="() => toggleProgType('Random')"
-        >
-          <RandomTrackIcon />
-        </button>
-        <button 
-          class="border rounded-md py-1 px-2 bg-slate-800"
-          :class="{ 'border-amber-500 text-amber-500' : progressType === 'Loop'}"
-          aria-label="Set progress mode to 'loop'"
-          @click="() => toggleProgType('Loop')"
-        >
-          <LoopIcon />
-        </button>
-        <input
-          class="w-20"
-          type="range"
-          min="0"
-          max="1"
-          step="0.05"
-          aria-label="Volume range"
-          role="presentation"
-          value="0.1"
-          @input="(e) => volumeValue = Number((e.target as HTMLInputElement).value)"
-        />
-      </div>
-      <div class="md:w-full md:px-10">
-        <input
-          disabled
-          class="w-full seek-bar"
-          :value="progressionPercent"
-          type="range"
-          min="0"
-          max="100"
-          step="0.05"
-          aria-label="Track Progression"
-          role="presentation"
-        />
-      </div>
-    </section>
     <div>
       <img
         class="aspect-square max-h-[90dvh] w-full max-w-content opacity-40 object-cover"
@@ -332,6 +265,16 @@
         alt=""
       >
     </div>
+    <Controls
+      class="hidden md:block"
+      :play-pause="() => playPause()"
+      :stop="() => stop()"
+      :set-volume="(num: number) => setVolume(num)"
+      :start-random="() => startRandom()"
+      :toggle-prog-type="(t: ProgressType) => toggleProgType(t)"
+      :progress-type="progressType"
+      :progression-percent="progressionPercent"
+    />
     <section class="grid md:grid-cols-2 items-center h-full overflow-clip max-h-[90dvh]">
       <div 
         class="
@@ -355,7 +298,7 @@
           <button 
             :id="`track_${index}`"
             :style="`rotate:${deg * (activeTrack - index)}deg`"
-            class="pr-5 text-xl text-slate-800  h-dynamic origin-[left_center] content-center transition-all duration-300"
+            class="pr-5 text-xl text-slate-800 border-amber-500/0  h-dynamic origin-[left_center] content-center transition-all duration-300"
             :data-index="index"
             :data-active="activeTrack"
             :data-deg="deg * (activeTrack - index)"
@@ -367,7 +310,7 @@
               === index) ? 0 : -1"
             :class="[
               { '!text-amber-400 underline underline-offset-3' : playingTrack === index },
-              { '-translate-x-5 md:border-r border-amber-500 rounded-2xl !text-green-600' : (
+              { '-translate-x-5 md:border-r !border-amber-500 rounded-2xl !text-green-400' : (
                 activeTrack > 0 ? 
                   (activeTrack % displayables.length) : 
                   (Math.abs(displayables.length - Math.abs(activeTrack))) % displayables.length)
@@ -375,6 +318,7 @@
               },
               { 'opacity-0 pointer-events-none' : (Math.abs((deg * (activeTrack - index)) % 360) > 45) && (Math.abs((deg * (activeTrack - index)) % 360) < 315)}
             ]"
+            :aria-hidden="(Math.abs((deg * (activeTrack - index)) % 360) > 45) && (Math.abs((deg * (activeTrack - index)) % 360) < 315)"
             @click="() => setPlayingTrack(index)"
             @keypress.space.enter="() => setPlayingTrack(index)"
             @keydown.arrow-up="((e:KeyboardEvent) => keyboardNavigate(e, index - 1))"
@@ -391,7 +335,10 @@
           aria-label="Reset Orientation"
           @click="() => activeTrack = playingTrack"
         >
-          <RefreshIcon class="size-full p-1.5 z-10 text-emerald-600 opacity-10 group-hover:opacity-100" />
+          <RefreshIcon 
+            class="size-full p-1.5 z-10 text-emerald-600 opacity-10 group-hover:opacity-100" 
+            role="presentation"
+          />
         </button>
       </div>
       <div 
@@ -422,6 +369,16 @@
         </div>
       </div>
     </section>
+    <Controls
+      class="md:hidden"
+      :play-pause="() => playPause()"
+      :stop="() => stop()"
+      :set-volume="(num: number) => setVolume(num)"
+      :start-random="() => startRandom()"
+      :toggle-prog-type="(t: ProgressType) => toggleProgType(t)"
+      :progress-type="progressType"
+      :progression-percent="progressionPercent"
+    />
   </div>
 </template>
 
@@ -434,44 +391,4 @@
     clip-path: circle(100% at 0px 50%);
   }
 
-  input[type=range].seek-bar  {
-    &:focus-visible, &:hover, &:disabled {
-      @apply outline-none;
-      -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-
-      &::-webkit-slider-thumb{
-        @apply appearance-none;
-        @apply shadow-none border-none;
-
-        height: 1rem;
-        width: 1rem;
-        border-radius: 100%;
-        background-color: var(--color-emerald-400) !important;
-        @apply border;
-        border: 1px solid var(--color-emerald-600);
-        
-        @apply translate-y-[-33%];
-      }
-      &::-moz-range-thumb{
-        @apply appearance-none;
-        @apply shadow-none border-none;
-
-        height: 1rem;
-        width: 1rem;
-        border-radius: 100%;
-        background-color: var(--color-emerald-400) !important;
-        @apply border;
-        border: 1px solid var(--color-emerald-600);
-      }
-
-      &::-webkit-slider-runnable-track{
-        background-color: var(--color-emerald-400) !important;
-        @apply h-1/3 rounded-full translate-y-[33%];
-      }
-      &::-moz-range-track{
-        background-color: var(--color-emerald-400) !important;
-        @apply h-1/3 rounded-full translate-y-[33%];
-      }
-    }
-  }
 </style>
