@@ -87,29 +87,26 @@
   }
   function handleMovePress(e: TouchEvent) {
     console.log('pressed');
-    console.log(e);
+    // console.log(e);
     touchPrev.value = e.changedTouches[0];
   }
 
   function handleMoveRelease(e: TouchEvent) {
     const time = e.timeStamp;
     console.log('released');
-    console.log(e);
+    // console.log(e);
     touchTick.value = time;
   }
   function handleMove(e: TouchEvent) {
     const time = e.timeStamp;
     if (time > (touchTick.value + TOUCH_TICK_LENGTH)){
-      console.log(e);
+      // console.log(e);
       touchTick.value = time;
-      let deltaX = 0, deltaY = 0;
-      if (touchPrev.value?.clientY){
-        deltaY = touchPrev.value?.clientY - e.changedTouches[0].clientY;
-      }
+      let deltaX = 0;
       if (touchPrev.value?.clientX){
         deltaX = touchPrev.value?.clientX - e.changedTouches[0].clientX;
       }
-      console.log(`Deltas: [x]: ${deltaX} [y]: ${deltaY}`);
+      // console.log(`Deltas: [x]: ${deltaX} [y]: ${deltaY}`);
       touchPrev.value = e.changedTouches[0];
 
       if (Math.abs(deltaX) > 2){
