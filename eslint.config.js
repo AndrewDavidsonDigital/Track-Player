@@ -1,8 +1,11 @@
 import eslint from '@eslint/js';
+
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tseslintParser from '@typescript-eslint/parser';
+
 import pluginVue from 'eslint-plugin-vue';
 import vueParser from 'vue-eslint-parser';
+
 import pluginVueA11y from "eslint-plugin-vuejs-accessibility";
 
 import { defineConfig, globalIgnores } from "eslint/config";
