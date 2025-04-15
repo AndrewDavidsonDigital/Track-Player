@@ -9,8 +9,9 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "build": "vite build",
+    "lint": "yarn eslint && yarn type-check",
     "type-check": "vue-tsc --build --force",
-    "lint": "eslint ."
+    "eslint": "eslint ."
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",
@@ -35,6 +36,7 @@
     "typescript": "~5.8.3",
     "vite": "^6.2.6",
     "vitest": "^3.1.1",
+    "vue-eslint-parser": "^10.1.3",
     "vue-tsc": "^2.2.8"
   },
   "packageManager": "yarn@4.4.1"
