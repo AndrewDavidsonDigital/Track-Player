@@ -4,6 +4,7 @@
   import { RefreshIcon, LoopIcon, RandomTrackIcon } from '@/components/icons';
 
   const AUDIO_ENGINE_ID = '_audio_engine';
+  const TOUCH_TICK_LENGTH = 100; // 100ms debouncer
 
   type ProgressType = "Next" | "Loop" | "Random"
 
@@ -13,6 +14,9 @@
   const currentlyPlayingMusic = ref(false);
   const progressType = ref<ProgressType>("Next");
   const volumeValue = ref(0.1);
+
+  const touchTick = ref<number>(0);
+  const touchPrev = ref<Touch>();
 
   const isLocal = import.meta.env.DEV
 
@@ -79,6 +83,40 @@
     
       default:
         break;
+    }
+  }
+  function handleMovePress(e: TouchEvent) {
+    console.log('pressed');
+    console.log(e);
+    touchPrev.value = e.changedTouches[0];
+  }
+
+  function handleMoveRelease(e: TouchEvent) {
+    const time = e.timeStamp;
+    console.log('released');
+    console.log(e);
+    touchTick.value = time;
+  }
+  function handleMove(e: TouchEvent) {
+    const time = e.timeStamp;
+    if (time > (touchTick.value + TOUCH_TICK_LENGTH)){
+      console.log(e);
+      touchTick.value = time;
+      let deltaX = 0, deltaY = 0;
+      if (touchPrev.value?.clientY){
+        deltaY = touchPrev.value?.clientY - e.changedTouches[0].clientY;
+      }
+      if (touchPrev.value?.clientX){
+        deltaX = touchPrev.value?.clientX - e.changedTouches[0].clientX;
+      }
+      console.log(`Deltas: [x]: ${deltaX} [y]: ${deltaY}`);
+      touchPrev.value = e.changedTouches[0];
+
+      if (Math.abs(deltaX) > 2){
+        setDisplayedTrack(activeTrack.value + (deltaX / 3));
+      }
+    } else {
+      console.log("bounced");
     }
   }
 
@@ -218,7 +256,17 @@
       loop
       @play="() => playbackStarted()"
     ></audio>
-    <section class="w-full mt-5 z-100 [&>div>button]:cursor-pointer flex flex-col gap-4 h-fit">
+    <section 
+      class="
+        w-full h-fit 
+        mt-[clamp(-8dvw,-5dvh,-2dvw)] md:mt-5 z-100 
+        [&>div>button]:cursor-pointer 
+        flex flex-col gap-4 
+        self-center md:self-start 
+        p-5
+        bg-slate-800/50 rounded-md md:bg-transparent
+      "
+    >
       <div class="flex flex-wrap gap-4 justify-center">
         <button 
           class="border rounded-md py-1 px-2 bg-slate-800"
@@ -266,7 +314,7 @@
           @input="(e) => volumeValue = Number((e.target as HTMLInputElement).value)"
         />
       </div>
-      <div class="px-[10vw] w-[100vw] md:w-full md:px-10">
+      <div class="md:w-full md:px-10">
         <input
           disabled
           class="w-full seek-bar"
@@ -279,33 +327,28 @@
           role="presentation"
         />
       </div>
-      <button 
-        class="md:hidden bg-slate-900 size-10 rounded-full border-2 border-slate-600 z-10 md:ml-20 cursor-pointer self-center group flex justify-center"
-        aria-label="Reset Orientation"
-        @click="() => activeTrack = playingTrack"
-      >
-        <RefreshIcon class="size-full p-1.5 z-10 text-emerald-600 opacity-10 group-hover:opacity-100" />
-      </button>
     </section>
-    <div class="bg-slate-600 h-[20vh] xs:hidden"></div>
     <div>
       <img
-        class="h-[90vh] w-screen opacity-40"
+        class="aspect-square max-h-[90dvh] w-full max-w-content opacity-40 object-cover"
         :src="displayables[playingTrack].album?.albumArt"
         alt=""
       >
     </div>
-    <section class="grid md:grid-cols-2 items-center h-full overflow-clip max-h-[90vh]">
+    <section class="grid md:grid-cols-2 items-center h-full overflow-clip max-h-[90dvh]">
       <div 
         class="
           mx-auto md:mx-[unset] rotate-90 md:rotate-360 
           w-[100vw] md:w-[unset]
-          max-w-[50vh] md:max-h-2/3 md:min-w-1/2
+          max-w-[50dvh] md:max-h-2/3 md:min-w-1/2
           aspect-square 
           bg-slate-600 grid-area-stack text-right items-center 
           overflow-clip clip-edge
           translate-y-[-120px] md:translate-y-0
         "
+        @touchmove="(e) => handleMove(e)"
+        @touchend="(e) => handleMoveRelease(e)"
+        @touchstart="(e) => handleMovePress(e)"
         @wheel.passive="(e) => changeTrack(e)"
       >
         <template
@@ -327,7 +370,7 @@
               === index) ? 0 : -1"
             :class="[
               { '!text-amber-400 underline underline-offset-3' : playingTrack === index },
-              { '-translate-x-5 border-r border-amber-500 rounded-2xl !text-green-600' : (
+              { '-translate-x-5 md:border-r border-amber-500 rounded-2xl !text-green-600' : (
                 activeTrack > 0 ? 
                   (activeTrack % displayables.length) : 
                   (Math.abs(displayables.length - Math.abs(activeTrack))) % displayables.length)
@@ -355,26 +398,31 @@
         </button>
       </div>
       <div 
-        class="
-          mx-auto md:mx-[unset] 
-          grid-area-stack rounded-full items-center
-          animate-spin animation-duration-3000 
-          md:translate-x-[clamp(10px,15vw,40%)] scale-[110%] overflow-clip border-2 
-          border-slate-600 animation-duration-1000
-          max-h-2/3 aspect-square
-        "
-        :class="[
-          { 'animation-play' : currentlyPlayingMusic },
-          { 'animation-pause' : !currentlyPlayingMusic }
-        ]"
+        class="z-10 p-[10dvw] md:p-0 md:!bg-none bg-no-repeat bg-contain"
+        :style="`background-image: url('${displayables[playingTrack].album?.albumArt}');`"
       >
-        <img
-          class="min-h-full min-w-full"
-          :src="displayables[playingTrack].album?.albumArt"
-          alt=""
+        <div 
+          class="
+            mx-auto md:mx-[unset] 
+            grid-area-stack rounded-full items-center
+            animate-spin animation-duration-3000 
+            md:translate-x-[clamp(10px,15vw,40%)] scale-[110%] overflow-clip border-2 
+            border-slate-600 animation-duration-1000
+            max-h-2/3 aspect-square
+          "
+          :class="[
+            { 'animation-play' : currentlyPlayingMusic },
+            { 'animation-pause' : !currentlyPlayingMusic }
+          ]"
         >
-        <div class="to-slate-400/50 from-slate-900/50 bg-radial size-full" />
-        <div class="bg-slate-900 size-10 rounded-full border-2 border-slate-600 justify-self-center" />
+          <img
+            class="min-h-full min-w-full"
+            :src="displayables[playingTrack].album?.albumArt"
+            alt=""
+          >
+          <div class="to-slate-400/50 from-slate-900/50 bg-radial size-full" />
+          <div class="bg-slate-900 size-10 rounded-full border-2 border-slate-600 justify-self-center" />
+        </div>
       </div>
     </section>
   </div>
