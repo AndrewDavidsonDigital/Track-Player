@@ -12,7 +12,7 @@
   const progressionPercent = ref(0);
   const currentlyPlayingMusic = ref(false);
   const progressType = ref<ProgressType>("Next");
-  const volumeValue = ref(0.3);
+  const volumeValue = ref(0.1);
 
   const isLocal = import.meta.env.DEV
 
