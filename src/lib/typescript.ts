@@ -42,7 +42,7 @@ type OnlyFirst<T, X> = T & {[Key in keyof Omit<X, keyof T>]?: never};
  * @param Result placeholder var for recursive calling as well as the var for storing our result.
  * @author Typed Rocks <pre>https://www.youtube.com/@Typed-Rocks</pre>
  */
-type MergeTypes<TypesArray extends any[], Result = {}> =
+type MergeTypes<TypesArray extends any[], Result = object > =
     TypesArray extends [infer Head, ...infer Remainder]
         ? MergeTypes<Remainder, Result & Head>
         : Result;
@@ -68,14 +68,14 @@ type OneOf<
 
 
 // bellow is bugged as its a merged type with part from type a and others from type b
-const overflowedAsset : MediaAsset_Union = {
+const _overflowedAsset : MediaAsset_Union = {
     id: '1',
     description: 'test asset',
     imgUrl: '/assets/img/123.jpg',
     extension: 'jpg',
 }
 
-const singularAsset : MediaAsset = {
+const _singularAsset : MediaAsset = {
     id: '1',
     description: 'test asset',
     documentUrl: '/assets/img/123.jpg',

@@ -194,7 +194,7 @@
     if (el){
       audioEngine.value = el;
 
-      intervalId = setInterval(() => ticker(), TIMER_INTERVAL);
+      intervalId = (setInterval(() => ticker(), TIMER_INTERVAL) as unknown as number);
     }
   });
 
